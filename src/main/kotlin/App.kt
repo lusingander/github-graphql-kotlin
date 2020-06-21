@@ -20,7 +20,7 @@ fun buildQuery(): ObjectNode {
     }
 }
 
-open class ObjectNode(val __name: String) {
+open class ObjectNode(protected val __name: String) {
     val children = mutableListOf<ObjectNode>()
 
     fun <T : ObjectNode> doInit(child: T, init: T.() -> Unit = {}) {
