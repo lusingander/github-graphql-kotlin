@@ -20,6 +20,10 @@ fun buildQuery(): ObjectNode {
     }
 }
 
+@DslMarker
+annotation class GraphQLMarker
+
+@GraphQLMarker
 open class ObjectNode(protected val __name: String) {
     val children = mutableListOf<ObjectNode>()
 
