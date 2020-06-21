@@ -6,21 +6,21 @@ fun main() {
 
 fun buildQuery(): ObjectNode {
     return repository {
-        name()
-        description()
+        name
+        description
         owner {
-            login()
+            login
         }
         stargazers(first = 10) {
-            totalCount()
+            totalCount
             nodes {
-                name()
+                name
             }
         }
     }
 }
 
-open class ObjectNode(val name: String) {
+open class ObjectNode(val __name: String) {
     val children = mutableListOf<ObjectNode>()
 
     fun <T : ObjectNode> doInit(child: T, init: T.() -> Unit = {}) {
@@ -29,16 +29,18 @@ open class ObjectNode(val name: String) {
     }
 
     override fun toString() =
-        "$name { ${children.joinToString(" ")} }"
+        "$__name { ${children.joinToString(" ")} }"
 }
 
-open class ScalarNode(name: String): ObjectNode(name) {
-    override fun toString() = name
+open class ScalarNode(__name: String): ObjectNode(__name) {
+    override fun toString() = __name
 }
 
 class REPOSITORY: ObjectNode("repository") {
-    fun name() = doInit(NAME())
-    fun description() = doInit(DESCRIPTION())
+    val name get() =
+        NAME().also { doInit(it) }
+    val description get() =
+        DESCRIPTION().also { doInit(it) }
     fun owner(init: OWNER.() -> Unit) =
         doInit(OWNER(), init)
     fun stargazers(first: Int = 0, init: STARGAZERS.() -> Unit) =
@@ -50,24 +52,27 @@ class NAME: ScalarNode("name")
 class DESCRIPTION: ScalarNode("description")
 
 class OWNER: ObjectNode("owner") {
-    fun login() = doInit(LOGIN())
+    val login get() =
+        LOGIN().also { doInit(it) }
 }
 
 class LOGIN: ScalarNode("login")
 
 class STARGAZERS(private val first: Int): ObjectNode("stargazers") {
-    fun totalCount() = doInit(TOTAL_COUNT())
+    val totalCount get() =
+        TOTAL_COUNT().also { doInit(it) }
     fun nodes(init: STARGAZERS_NODES.() -> Unit) =
         doInit(STARGAZERS_NODES(), init)
 
     override fun toString() =
-        "$name(first: $first) { ${children.joinToString(" ")} }"
+        "$__name(first: $first) { ${children.joinToString(" ")} }"
 }
 
 class TOTAL_COUNT: ScalarNode("totalCount")
 
 class STARGAZERS_NODES: ObjectNode("nodes") {
-    fun name() = doInit(NAME())
+    val name get() =
+        NAME().also { doInit(it) }
 }
 
 fun repository(init: REPOSITORY.() -> Unit) = REPOSITORY().apply(init)
